@@ -42,51 +42,32 @@ class GameFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-
-        // Inflate view and obtain an instance of the binding class
         binding = DataBindingUtil.inflate(
                 inflater,
                 R.layout.game_fragment,
                 container,
                 false
         )
-        Log.i("GameFragment", "Called ViewModelProviders.of")
+
         viewModel = ViewModelProviders.of(this).get(GameViewModel::class.java)
         viewModel.resetList()
         viewModel.nextWord()
 
-        binding.correctButton.setOnClickListener { onCorrect() }
-        binding.skipButton.setOnClickListener { onSkip() }
-        binding.endGameButton.setOnClickListener { onEndGame() }
+        binding.gameViewModel = viewModel
 
-        //Observer
         viewModel.score.observe(this, Observer { newScore ->
             binding.scoreText.text = newScore.toString()
         })
-
         viewModel.word.observe(this, Observer { newWord ->
             binding.wordText.text = newWord
         })
-
         viewModel.eventGameFinish.observe(this, Observer<Boolean> { hasFinished ->
             if (hasFinished) gameFinished()
         })
 
+        Log.i("GameFragment", "Called ViewModelProviders.of")
         return binding.root
 
-    }
-
-    private fun onSkip() {
-        viewModel.onSkip()
-    }
-
-
-    private fun onCorrect(){
-        viewModel.onCorrect()
-    }
-
-    private fun onEndGame(){
-        gameFinished()
     }
     private fun gameFinished() {
         Toast.makeText(activity, "Game has just finished", Toast.LENGTH_SHORT).show()
